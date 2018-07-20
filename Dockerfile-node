@@ -1,0 +1,11 @@
+FROM node:9-alpine
+ENV APP_DIR /app/
+
+# Give npm a $HOME to work with
+ENV HOME /tmp/
+ENV NPM_CONFIG_LOGLEVEL warn
+
+# Expose local server port
+EXPOSE 6006
+
+WORKDIR $APP_DIR

@@ -1,0 +1,33 @@
+version: '3'
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_NUM_PARTITIONS: 10
+  zookeeper:
+    image: zookeeper:3.4
+  developer:
+    # deploy:
+    #   replicas: 10
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    volumes:
+    - .:/app:cached
+    links:
+      - kafka:kafka
+    command: node backender
+  po:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    volumes:
+    - .:/app:cached
+    links:
+      - kafka:kafka
+    command: node po
