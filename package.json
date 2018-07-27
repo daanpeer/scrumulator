@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "po": "nodemon po",
+    "backender": "nodemon backender"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "kafka-node": "^2.6.1",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "nodemon": "^1.18.3"
   }
 }

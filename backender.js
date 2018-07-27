@@ -1,48 +1,87 @@
 const kafka = require("kafka-node");
-const _ = require('lodash');
+const _ = require("lodash");
+const crypto = require("crypto");
 
 const options = {
-  host: 'zookeeper:2181',  // zookeeper host omit if connecting directly to broker (see kafkaHost below)
-  kafkaHost: 'kafka:9092', // connect directly to kafka broker (instantiates a KafkaClient)
-  // zk : undefined,   // put client zk settings if you need them (see Client)
-  // batch: undefined, // put client batch settings if you need them (see Client)
-  // ssl: true, // optional (defaults to false) or tls options hash
-  groupId: 'backenders',
+  host: "zookeeper:2181",
+  kafkaHost: "kafka:9092",
+  groupId: "backenders",
   id: process.env.HOSTNAME,
   sessionTimeout: 15000,
-  // An array of partition assignment protocols ordered by preference.
-  // 'roundrobin' or 'range' string for built ins (see below to pass in custom assignment protocol)
-  protocol: ['roundrobin'],
-
-  // Offsets to use for new groups other options could be 'earliest' or 'none' (none will emit an error if no offsets were saved)
-  // equivalent to Java client's auto.offset.reset
-  // fromOffset: 'latest', // default
-  // commitOffsetsOnFirstJoin: true, // on the very first time this consumer group subscribes to a topic, record the offset returned in fromOffset (latest/earliest)
-  // how to recover from OutOfRangeOffset error (where save offset is past server retention) accepts same value as fromOffset
-  // outOfRangeOffset: 'earliest', // default
-  // migrateHLC: false,    // for details please see Migration section below
-  // migrateRolling: true,
-  // Callback to allow consumers with autoCommit false a chance to commit before a rebalance finishes
-  // isAlreadyMember will be false on the first connection, and true on rebalances triggered after that
-  // onRebalance: (isAlreadyMember, callback) => { callback(); } // or null
+  protocol: ["roundrobin"]
 };
 
-const consumerGroup = new kafka.ConsumerGroup(options, ['backend'])
+const consumerGroup = new kafka.ConsumerGroup(options, ["backend"]);
 
-// console.log('connected');
-// const consumer = new kafka.Consumer(
-//   client,
-//   topics,
-//   {
-//     autoCommit: false
-//   }
-// );
-
-console.log('listening');
-consumerGroup.on("message", function(message, err) {
-  console.log(message, err);
+const client = new kafka.KafkaClient({
+  kafkaHost: "kafka:9092"
 });
 
-// consumer.on("error", err => {
-//   console.log(err);
-// });
+const complexity = process.argv[2];
+
+let isWorking = false;
+
+const doWork = ({ storypoints, issue }) => {
+  isWorking = true;
+  console.log(
+    "Working on story ",
+    issue,
+    " with a total of ",
+    storypoints,
+    " storypoints"
+  );
+  console.time("Working!");
+  let working = true;
+  let i = 0;
+  while (working) {
+    const id = crypto.randomBytes(20).toString("hex");
+    const hash = crypto
+      .createHash("sha1")
+      .update(id)
+      .digest("hex");
+
+    // console.log(hash.substring(0, storypoints));
+    if (hash.substring(0, storypoints) === "0".repeat(storypoints)) {
+      console.log("done with hash!", hash);
+      break;
+    }
+
+    i++;
+  }
+  console.timeEnd("Working!");
+  isWorking = false;
+};
+
+
+const producer = new kafka.Producer(client);
+producer.on('ready', () => {
+  console.log(isWorking);
+ 
+  // send a message that the work is complete
+  producer.send(
+    [{ topic: "lfw", partition: 0 }],
+    (err, data) => {
+      console.log(err, data);
+    }
+  ); 
+});
+
+console.log("Developer listening!");
+consumerGroup.on("message", function(message, err) {
+  console.log("Receiving work!");
+  if (isWorking) {
+    console.log("I'm already working!");
+    return;
+  }
+
+  const work = JSON.parse(message.value);
+  doWork(work);
+
+  // send a message that the work is complete
+  producer.send(
+    [{ topic: "po", partition: 0, messages: JSON.stringify(work) }],
+    (err, data) => {
+      console.log(err, data);
+    }
+  );
+});

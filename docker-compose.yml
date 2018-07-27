@@ -20,8 +20,8 @@ services:
     volumes:
     - .:/app:cached
     links:
-      - kafka:kafka
-    command: node backender
+      - kafka:kafk
+    command: npm run backender 
   po:
     build:
       context: .
@@ -30,4 +30,4 @@ services:
     - .:/app:cached
     links:
       - kafka:kafka
-    command: node po
+    command: npm run po
