@@ -54,17 +54,17 @@ const doWork = ({ storypoints, issue }) => {
 
 
 const producer = new kafka.Producer(client);
-producer.on('ready', () => {
-  console.log(isWorking);
+// producer.on('ready', () => {
+//   console.log(isWorking);
  
-  // send a message that the work is complete
-  producer.send(
-    [{ topic: "lfw", partition: 0 }],
-    (err, data) => {
-      console.log(err, data);
-    }
-  ); 
-});
+//   // send a message that the work is complete
+//   producer.send(
+//     [{ topic: "lfw", partition: 0, }],
+//     (err, data) => {
+//       console.log(err, data);
+//     }
+//   ); 
+// });
 
 console.log("Developer listening!");
 consumerGroup.on("message", function(message, err) {
