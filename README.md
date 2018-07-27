@@ -1,2 +1,5 @@
-- [ ] Let the developers do work
+- [x] Let the developers do work
 - [ ] Let the PO distribute "Real" work
+- [ ] Let the developers ask for work
+- [ ] Let the developers report the work they've picked up
+- [ ] Let the board update

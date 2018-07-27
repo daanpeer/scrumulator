@@ -43,16 +43,11 @@ sprint:
 * let the developers perform work
 
 work:
+* developer asks for work
 * the developer can receive work
 * notifies that the work is in progress
 * the developer notifies PO when work is complete
- */
-
-/*
-* timeline 
-* velocity
-* events (sprintplanning, sprint start)
-* product backlog, sprint
+* the board is updated
 */
 
 const wait = (ms) => new Promise((resolve) => {
